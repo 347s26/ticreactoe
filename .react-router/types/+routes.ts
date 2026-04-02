@@ -14,20 +14,87 @@ type Pages = {
   "/": {
     params: {};
   };
+  "/handle/:handle": {
+    params: {
+      "handle": string;
+    };
+  };
+  "/handle/:handle/game/:joinCode": {
+    params: {
+      "handle": string;
+      "joinCode": string;
+    };
+  };
+  "/join/:joinCode": {
+    params: {
+      "joinCode": string;
+    };
+  };
+  "/login": {
+    params: {};
+  };
+  "/account/signup": {
+    params: {};
+  };
+  "/account/verify-email/:key": {
+    params: {
+      "key": string;
+    };
+  };
+  "/account/password/reset/key/:key": {
+    params: {
+      "key": string;
+    };
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/";
+    page: "/" | "/handle/:handle" | "/handle/:handle/game/:joinCode" | "/join/:joinCode" | "/login" | "/account/signup" | "/account/verify-email/:key" | "/account/password/reset/key/:key";
   };
   "routes/home.tsx": {
     id: "routes/home";
     page: "/";
+  };
+  "routes/handle.tsx": {
+    id: "routes/handle";
+    page: "/handle/:handle";
+  };
+  "routes/handle-game.tsx": {
+    id: "routes/handle-game";
+    page: "/handle/:handle/game/:joinCode";
+  };
+  "routes/join.tsx": {
+    id: "routes/join";
+    page: "/join/:joinCode";
+  };
+  "routes/login.tsx": {
+    id: "routes/login";
+    page: "/login";
+  };
+  "routes/account/signup.tsx": {
+    id: "routes/account/signup";
+    page: "/account/signup";
+  };
+  "routes/account/verify-email.tsx": {
+    id: "routes/account/verify-email";
+    page: "/account/verify-email/:key";
+  };
+  "routes/account/password-reset-key.tsx": {
+    id: "routes/account/password-reset-key";
+    page: "/account/password/reset/key/:key";
   };
 };
 
 type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/home": typeof import("./app/routes/home.tsx");
+  "routes/handle": typeof import("./app/routes/handle.tsx");
+  "routes/handle-game": typeof import("./app/routes/handle-game.tsx");
+  "routes/join": typeof import("./app/routes/join.tsx");
+  "routes/login": typeof import("./app/routes/login.tsx");
+  "routes/account/signup": typeof import("./app/routes/account/signup.tsx");
+  "routes/account/verify-email": typeof import("./app/routes/account/verify-email.tsx");
+  "routes/account/password-reset-key": typeof import("./app/routes/account/password-reset-key.tsx");
 };
