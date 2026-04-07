@@ -6,11 +6,16 @@ import {
     Scripts,
     ScrollRestoration,
 } from "react-router";
+import { useEffect } from "react";
+import { Provider } from "react-redux";
 
 import type { Route } from "./+types/root";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 import { NavBar } from "./components/NavBar";
+import { store } from "./store";
+import { useAppDispatch } from "./hooks";
+import { fetchSession } from "./features/auth/authSlice";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -44,12 +49,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
-export default function App() {
+function AppContent() {
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(fetchSession());
+    }, [dispatch]);
+
     return (
         <>
             <NavBar />
             <Outlet />
         </>
+    );
+}
+
+export default function App() {
+    return (
+        <Provider store={store}>
+            <AppContent />
+        </Provider>
     );
 }
 

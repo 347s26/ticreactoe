@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -7,26 +7,14 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { useNavigate } from "react-router";
 import type { FormEvent } from "react";
-import { BACKEND_URL } from "../lib";
+import { useAppSelector } from "../hooks";
 
 type Mode = "choose" | "create" | "join";
 
 export function Landing() {
     const navigate = useNavigate();
-    const [username, setUsername] = useState<string | null>(null);
+    const username = useAppSelector((s) => s.auth.username);
     const [mode, setMode] = useState<Mode>("choose");
-
-    useEffect(() => {
-        fetch(`${BACKEND_URL}/_allauth/browser/v1/auth/session`, {
-            credentials: "include",
-        })
-            .then((res) => (res.ok ? res.json() : null))
-            .then((body) => {
-                const name = body?.data?.user?.username;
-                if (name) setUsername(name);
-            })
-            .catch(() => {});
-    }, []);
 
     function handleCreateSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -102,8 +90,7 @@ export function Landing() {
                                 </Button>
                             </Form>
                             <div className="text-center mt-3 text-muted">
-                                or{" "}
-                                <a href="/login">sign in</a>
+                                or <a href="/login">sign in</a>
                             </div>
                         </Col>
                     )}

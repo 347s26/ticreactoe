@@ -1,52 +1,23 @@
-import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router";
 import type { FormEvent } from "react";
-import { BACKEND_URL, getCsrfToken } from "../lib";
-
-type JoinResult = { join_code: string } | { error: string };
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { joinGame } from "../features/game/gameSlice";
 
 export function JoinGame({ joinCode }: { joinCode: string }) {
     const navigate = useNavigate();
-    const [username, setUsername] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [joining, setJoining] = useState(false);
+    const dispatch = useAppDispatch();
+    const username = useAppSelector((s) => s.auth.username);
+    const { joining, joinError } = useAppSelector((s) => s.game);
 
-    useEffect(() => {
-        fetch(`${BACKEND_URL}/_allauth/browser/v1/auth/session`, {
-            credentials: "include",
-        })
-            .then((res) => (res.ok ? res.json() : null))
-            .then((body) => {
-                const name = body?.data?.user?.username;
-                if (name) setUsername(name);
-            })
-            .catch(() => {});
-    }, []);
-
-    function joinAs(handle: string) {
-        setJoining(true);
-        setError(null);
-        fetch(`${BACKEND_URL}/api/player/${handle}/game/${joinCode}/join`, {
-            method: "POST",
-            credentials: "include",
-            headers: { "X-CSRFToken": getCsrfToken() },
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-                return res.json() as Promise<JoinResult>;
-            })
-            .then((data) => {
-                if ("error" in data) throw new Error(data.error);
-                navigate(`/handle/${encodeURIComponent(handle)}/game/${joinCode}`);
-            })
-            .catch((err: unknown) =>
-                setError(err instanceof Error ? err.message : String(err))
-            )
-            .finally(() => setJoining(false));
+    async function joinAs(handle: string) {
+        const result = await dispatch(joinGame({ handle, joinCode }));
+        if (joinGame.fulfilled.match(result)) {
+            navigate(`/handle/${encodeURIComponent(handle)}/game/${joinCode}`);
+        }
     }
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -61,7 +32,7 @@ export function JoinGame({ joinCode }: { joinCode: string }) {
             <p className="text-muted mb-4">
                 Join code: <strong>{joinCode}</strong>
             </p>
-            {error && <p className="text-danger">{error}</p>}
+            {joinError && <p className="text-danger">{joinError}</p>}
             {username && (
                 <>
                     <Button

@@ -1,33 +1,17 @@
-import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import BSNavbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Container from "react-bootstrap/Container";
-import { BACKEND_URL, getCsrfToken } from "../lib";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { signOut } from "../features/auth/authSlice";
 
 export function NavBar() {
     const navigate = useNavigate();
-    const [username, setUsername] = useState<string | null>(null);
-
-    useEffect(() => {
-        fetch(`${BACKEND_URL}/_allauth/browser/v1/auth/session`, {
-            credentials: "include",
-        })
-            .then((res) => (res.ok ? res.json() : null))
-            .then((body: { data?: { user?: { username?: string } } } | null) => {
-                const name = body?.data?.user?.username;
-                if (name) setUsername(name);
-            })
-            .catch(() => {});
-    }, []);
+    const dispatch = useAppDispatch();
+    const username = useAppSelector((s) => s.auth.username);
 
     async function handleSignOut() {
-        await fetch(`${BACKEND_URL}/_allauth/browser/v1/auth/session`, {
-            method: "DELETE",
-            credentials: "include",
-            headers: { "X-CSRFToken": getCsrfToken() },
-        });
-        setUsername(null);
+        await dispatch(signOut());
         navigate("/");
     }
 
