@@ -9,7 +9,7 @@ import { createGame, clearNewGame } from "../features/game/gameSlice";
 
 export function HandleHome({ handle }: { handle: string }) {
     const dispatch = useAppDispatch();
-    const { data: player, error: playerError } = useAppSelector((s) => s.player);
+    const { data: player } = useAppSelector((s) => s.player);
     const { creating, createError, newGame } = useAppSelector((s) => s.game);
     const { username } = useAppSelector((s) => s.auth);
 
@@ -33,7 +33,7 @@ export function HandleHome({ handle }: { handle: string }) {
     }, [dispatch, handle]);
 
     const effectiveAltHandle = customHandle.trim() || altHandle;
-    const error = playerError ?? createError;
+    const error = createError;
 
     return (
         <Container>

@@ -32,6 +32,7 @@ export const fetchPlayer = createAsyncThunk(
         const res = await fetch(`${BACKEND_URL}/api/player/${handle}`, {
             credentials: "include",
         });
+        if (res.status === 404) return null;
         if (!res.ok) return rejectWithValue(`${res.status} ${res.statusText}`);
         return (await res.json()) as PlayerDetail;
     }
