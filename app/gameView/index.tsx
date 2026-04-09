@@ -84,10 +84,10 @@ export function GameView({ handle, joinCode }: { handle: string; joinCode: strin
         let stopped = false;
 
         function connect() {
-            const wsUrl = BACKEND_URL
-                .replace(/^http/, "ws")
-                .replace("localhost", "127.0.0.1")
-                + `/ws/game/${joinCode}/`;
+            const wsBase = BACKEND_URL
+                ? BACKEND_URL.replace(/^http/, "ws").replace("localhost", "127.0.0.1")
+                : `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}`;
+            const wsUrl = wsBase + `/ws/game/${joinCode}/`;
             ws = new WebSocket(wsUrl);
             wsRef.current = ws;
 
