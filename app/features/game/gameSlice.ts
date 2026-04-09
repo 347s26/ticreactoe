@@ -23,7 +23,7 @@ type SliceState = {
     fetchError: string | null;
     creating: boolean;
     createError: string | null;
-    newGame: { join_code: string } | null;
+    newGame: { join_code: string; handle: string } | null;
     joining: boolean;
     joinError: string | null;
     movePending: boolean;
@@ -63,7 +63,8 @@ export const createGame = createAsyncThunk(
             headers: { "X-CSRFToken": getCsrfToken() },
         });
         if (!res.ok) return rejectWithValue(`${res.status} ${res.statusText}`);
-        return (await res.json()) as { join_code: string };
+        const data = await res.json() as { join_code: string };
+        return { join_code: data.join_code, handle };
     }
 );
 
